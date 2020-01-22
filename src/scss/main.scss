@@ -1,0 +1,20 @@
+@import './settings/colors';
+
+.container{
+    width: 500px;
+    margin: 0 auto;
+}
+
+body{
+    background-color: $color2;
+}
+
+.quiz{
+    box-shadow: 3px 3px 2px 2px $color4;
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: $color1;    
+}
