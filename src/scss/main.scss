@@ -1,5 +1,33 @@
 @import './settings/colors';
 
+
+.decoration-top{
+    position: absolute;
+    top: 0;
+    left: 0;
+    div{
+        display: inline-block;
+        width: 8px;
+        height: 20px;
+        margin: 0 20px;
+        background-color: $color5;
+        transform: skewX(15deg);
+    }
+}
+
+.decoration-bottom{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    div{
+        display: inline-block;
+        width: 8px;
+        height: 20px;
+        margin: 0 20px;
+        background-color: $color5;
+        transform: translate(0,4px) skewX(15deg);
+    }
+}
 .container{
     width: 500px;
     margin: 0 auto;
@@ -7,14 +35,56 @@
 
 body{
     background-color: $color2;
+    
+}
+
+.jumbotron{
+    margin: 100px 0;
+    text-align: center;
+    transform: skew(-5deg,-5deg);
+    font-weight: 700;
+    
+    .jumbotron-item1{
+        font-size: 40px;
+        text-decoration: underline;
+    }
+    
+    .jumbotron-item2{
+        font-size: 70px;
+        text-shadow: 3px 3px 0 $color4;
+    }
 }
 
 .quiz{
-    box-shadow: 3px 3px 2px 2px $color4;
+    box-shadow: 3px 3px 2px 2px $color5;
+    border-radius: 10px;
     margin-top: 50px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    background-color: $color1;    
+    background-color: $color1;
+    .quiz-question{
+        border-radius: 10px 10px 0 0;
+        background-color: $color4;
+        width: 100%;
+        text-align: center;
+        font-weight: bold;
+        font-size: 30px;
+    }    
+    .quiz-answers{
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        button{
+            width: 150px;
+            height: 50px;
+            margin: 20px;
+            border-radius: 25px;
+            user-select: none; 
+            &:focus{
+                outline: none;
+            }
+        }
+    }
 }
