@@ -5,10 +5,11 @@
     position: absolute;
     top: 0;
     left: 0;
+    height: 20px;
     div{
         display: inline-block;
+        height: 100%;
         width: 8px;
-        height: 20px;
         margin: 0 20px;
         background-color: $color5;
         transform: skewX(15deg);
@@ -19,13 +20,14 @@
     position: absolute;
     bottom: 0;
     right: 0;
+    height: 20px;
     div{
+        height: 100%;
         display: inline-block;
         width: 8px;
-        height: 20px;
         margin: 0 20px;
         background-color: $color5;
-        transform: translate(0,4px) skewX(15deg);
+        transform: skewX(15deg);
     }
 }
 .container{
@@ -71,20 +73,48 @@ body{
         text-align: center;
         font-weight: bold;
         font-size: 30px;
+        overflow-wrap: break-word;
+        padding: 15px;
+        box-sizing: border-box;
     }    
     .quiz-answers{
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        button{
-            width: 150px;
-            height: 50px;
-            margin: 20px;
-            border-radius: 25px;
-            user-select: none; 
-            &:focus{
-                outline: none;
-            }
-        }
     }
+    button{
+        width: 150px;
+        height: 50px;
+        margin: 20px;
+        border-radius: 25px;
+        user-select: none;
+        font-size: 15px;
+        font-weight: bold;
+        &:focus{
+            outline: none;
+        }
+        &:hover{
+            cursor: pointer;
+        }
+
+        .red{
+            background-color: red;
+        }
+
+        .green{
+            background-color: green;
+        }
+
+    }
+    .hidden{
+        display: none;
+    }
+}
+
+.green{
+    background-color: green;
+}
+
+.red{
+    background-color: red;
 }

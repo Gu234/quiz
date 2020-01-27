@@ -1,31 +1,43 @@
 import React, { Component } from 'react';
 import './scss/main.scss';
 import { AllHtmlEntities } from 'html-entities';
+import Answer from './components/answer'
 
 const entities = new AllHtmlEntities();
 
 class App extends Component {
   state = {
+    quizState: 'initial',
     data: null,
+    correct_answer_index: Math.floor(Math.random() * 4),
     currentQuestion: 0,
-    quizState: 'Check Answer',
-    confirmButtonContent: 'Confirm answer',
+    confirmButtonContent: 'Choose an answer',
     score: 0
   }
 
-  handleNextQuestion = () => {
-    if (this.state.quizState === 'Wrong' || this.state.quizState === 'Correct')
-      this.setState({ currentQuestion: this.currentQuestion + 1 })
+
+  componentDidMount() {
+
+    let data = localStorage.getItem("data");
+
+    if (data) {
+      data = JSON.parse(data);
+      this.setState({ data });
+    } else {
+      fetch('https://opentdb.com/api.php?amount=10&category=9&difficulty=easy&type=multiple')
+        .then(res => res.json())
+        .then(data => {
+          this.setState({ data });
+          localStorage.setItem("data", JSON.stringify(data));
+        });
+    }
+
   }
 
-  // componentDidMount() {
-  //   fetch('https://opentdb.com/api.php?amount=10&category=9&difficulty=easy&type=multiple')
-  //     .then(response => response.json())
-  //     .then(data => this.setState({ data }))
-  // }
-
   render() {
-    const { currentQuestion, data, quizState } = this.state;
+    const { currentQuestion, data, quizState, correct_answer_index } = this.state;
+    if (!data) return null;
+
     return (<>
       <div className="container">
         <div className="decoration-top">
@@ -44,14 +56,21 @@ class App extends Component {
         </div>
         <div className="quiz">
 
-          <div className='quiz-question'>fasdfsdafdasfdasfs{data === null ? null : entities.decode(this.state.data.results[currentQuestion].question)}</div>
+          <div className='quiz-question'>{entities.decode(data.results[currentQuestion].question)}</div>
           <div className="quiz-answers">
-            <button onClick={() => this.setState({ quizState: 'Correct, Go to Next Question' })} className="correct answer">{data === null ? null : data.results[currentQuestion].correct_answer}</button>
-            <button onClick={() => this.setState({ quizState: 'red' })} className="incorrect answer">{data === null ? null : data.results[currentQuestion].incorrect_answers[0]}aaaaa</button>
-            <button onClick={() => this.setState({ quizState: 'red' })} className="incorrect answer">{data === null ? null : data.results[currentQuestion].incorrect_answers[1]}</button>
-            <button onClick={() => this.setState({ quizState: 'red' })} className="incorrect answer">{data === null ? null : data.results[currentQuestion].incorrect_answers[2]}</button>
+            {this.getAnswers().map((answer, index) =>
+              <Answer onClick={this.handleAnswerButton}
+                is_correct_answer={correct_answer_index === index ? true : false}
+                id={index}
+                quizState={quizState}
+                key={index}>{entities.decode(answer)}
+              </Answer>
+            )}
           </div>
-          <button onClick={this.handleNextQuestion}> {quizState}</button>
+          <button onClick={this.handleNextQuestion}
+            className={this.setNextQuestionButtonClass()}>
+            {this.setNextQuestionButtonMessage()}
+          </button>
         </div>
         <div className="decoration-bottom">
           <div></div>
@@ -66,6 +85,49 @@ class App extends Component {
       </div>
     </>
     )
+  }
+
+  getAnswers() {
+    const currentQuestion = this.state.currentQuestion;
+    const answers = [...this.state.data.results[currentQuestion].incorrect_answers];
+    const correct_answer = this.state.data.results[currentQuestion].correct_answer;
+    answers.splice(this.state.correct_answer_index, 0, correct_answer);
+    return answers
+  }
+
+  handleNextQuestion = () => {
+    if (this.state.quizState === 'red' || this.state.quizState === 'green')
+      this.setState({
+        currentQuestion: this.state.currentQuestion + 1,
+        quizState: 'initial',
+        correct_answer_index: Math.floor(Math.random() * 4)
+      })
+  }
+
+  handleAnswerButton = (index) => {
+
+    if (this.state.correct_answer_index === index)
+      this.setState({ quizState: 'green', score: this.state.score + 1 })
+    else
+      this.setState({ quizState: 'red' })
+
+  }
+
+  setNextQuestionButtonClass() {
+    switch (this.state.quizState) {
+      case 'red':
+        return 'red'
+      case 'green':
+        return 'green'
+      default:
+        return 'hidden'
+    }
+  }
+
+  setNextQuestionButtonMessage() {
+    if (this.state.quizState === 'green')
+      return 'Correct! Go to next'
+    return 'Wrong! Go to next'
   }
 }
 
