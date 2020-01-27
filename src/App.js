@@ -35,8 +35,10 @@ class App extends Component {
   }
 
   render() {
-    const { currentQuestion, data, quizState, correct_answer_index } = this.state;
+    const { currentQuestion, data } = this.state;
     if (!data) return null;
+    if (this.isQuizFinished())
+      return <div>{this.state.score}/10</div>
 
     return (<>
       <div className="container">
@@ -58,16 +60,15 @@ class App extends Component {
 
           <div className='quiz-question'>{entities.decode(data.results[currentQuestion].question)}</div>
           <div className="quiz-answers">
-            {this.getAnswers().map((answer, index) =>
-              <Answer onClick={this.handleAnswerButton}
-                is_correct_answer={correct_answer_index === index ? true : false}
-                id={index}
-                quizState={quizState}
-                key={index}>{entities.decode(answer)}
+            {this.getAnswers().map((answer) =>
+              <Answer onClick={() => this.setSelectedAnswer(answer)}
+                is_correct_answer={this.isCorrectAnswer(answer)}
+                disabled={this.isSelectedAnswer()}
+                key={answer}>{entities.decode(answer)}
               </Answer>
             )}
           </div>
-          <button onClick={this.handleNextQuestion}
+          <button onClick={this.showNextQuestion}
             className={this.setNextQuestionButtonClass()}>
             {this.setNextQuestionButtonMessage()}
           </button>
@@ -87,34 +88,72 @@ class App extends Component {
     )
   }
 
+  setSelectedAnswer(selectedAnswer) {
+    this.setState({ selectedAnswer })
+  }
+
+  isSelectedAnswer() {
+    return !!this.state.selectedAnswer
+  }
+
+  isCorrectAnswer(answer) {
+    return answer === this.correctAnswer()
+  }
+
+  correctAnswer() {
+    return this.currentQuestion().correct_answer
+  }
+
+  currentQuestion() {
+    return this.state.data.results[this.state.currentQuestion]
+  }
+
   getAnswers() {
-    const currentQuestion = this.state.currentQuestion;
-    const answers = [...this.state.data.results[currentQuestion].incorrect_answers];
-    const correct_answer = this.state.data.results[currentQuestion].correct_answer;
-    answers.splice(this.state.correct_answer_index, 0, correct_answer);
+    const answers = [...this.currentQuestion().incorrect_answers];
+    answers.splice(this.state.correct_answer_index, 0, this.correctAnswer());
     return answers
   }
 
-  handleNextQuestion = () => {
-    if (this.state.quizState === 'red' || this.state.quizState === 'green')
-      this.setState({
-        currentQuestion: this.state.currentQuestion + 1,
-        quizState: 'initial',
-        correct_answer_index: Math.floor(Math.random() * 4)
-      })
+  showNextQuestion = () => {
+
+    if (this.isSelectedAnswerCorrect()) {
+      this.setState({ score: this.state.score + 1 })
+    }
+
+    this.setSelectedAnswer(null);
+
+    this.setState({
+      currentQuestion: this.state.currentQuestion + 1,
+      correct_answer_index: Math.floor(Math.random() * 4)
+    })
   }
 
-  handleAnswerButton = (index) => {
+  handleAnswerButton = (answer) => {
 
-    if (this.state.correct_answer_index === index)
+    if (this.isCorrectAnswer(answer))
       this.setState({ quizState: 'green', score: this.state.score + 1 })
     else
       this.setState({ quizState: 'red' })
 
   }
 
+  isSelectedAnswerCorrect() {
+    if (!this.isSelectedAnswer()) return false
+    return this.isCorrectAnswer(this.state.selectedAnswer)
+  }
+
+  quizState() {
+    if (!this.isSelectedAnswer())
+      return 'initial'
+
+    if (this.isSelectedAnswerCorrect())
+      return 'green'
+    else
+      return 'red'
+  }
+
   setNextQuestionButtonClass() {
-    switch (this.state.quizState) {
+    switch (this.quizState()) {
       case 'red':
         return 'red'
       case 'green':
@@ -125,10 +164,15 @@ class App extends Component {
   }
 
   setNextQuestionButtonMessage() {
-    if (this.state.quizState === 'green')
-      return 'Correct! Go to next'
-    return 'Wrong! Go to next'
+    if (this.isSelectedAnswerCorrect())
+      return 'Correct! Next question'
+    return 'Wrong! Next question'
   }
+
+  isQuizFinished() {
+    return this.state.currentQuestion === this.state.data.results.length
+  }
+
 }
 
 export default App;

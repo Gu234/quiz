@@ -10,7 +10,7 @@ export default class extends Component {
         return <button onClick={() => this.handleClick()}
             className={this.className()}
             id={id}
-            disabled={this.props.quizState === 'initial' ? false : true}
+            disabled={this.props.disabled}
         >{children}</button>
     }
 
