@@ -17,28 +17,17 @@ class App extends Component {
 
 
   componentDidMount() {
-
-    let data = localStorage.getItem("data");
-
-    if (data) {
-      data = JSON.parse(data);
-      this.setState({ data });
-    } else {
+    if (!this.state.data) {
       fetch('https://opentdb.com/api.php?amount=10&category=9&difficulty=easy&type=multiple')
         .then(res => res.json())
-        .then(data => {
-          this.setState({ data });
-          localStorage.setItem("data", JSON.stringify(data));
-        });
+        .then(data => this.setState({ data })
+        )
     }
-
   }
 
   render() {
     const { currentQuestion, data } = this.state;
     if (!data) return null;
-    if (this.isQuizFinished())
-      return <div>{this.state.score}/10</div>
 
     return (<>
       <div className="container">
@@ -57,21 +46,30 @@ class App extends Component {
           <div className='jumbotron-item2'>QUIZ TIME!</div>
         </div>
         <div className="quiz">
+          {this.isQuizFinished() ?
+            <>
+              <div className='quiz-score-description'>Your score:</div>
+              <div className='quiz-score'>{this.state.score}/10</div>
+              <button onClick={this.reloadPage}>Again?</button>
 
-          <div className='quiz-question'>{entities.decode(data.results[currentQuestion].question)}</div>
-          <div className="quiz-answers">
-            {this.getAnswers().map((answer) =>
-              <Answer onClick={() => this.setSelectedAnswer(answer)}
-                is_correct_answer={this.isCorrectAnswer(answer)}
-                disabled={this.isSelectedAnswer()}
-                key={answer}>{entities.decode(answer)}
-              </Answer>
-            )}
-          </div>
-          <button onClick={this.showNextQuestion}
-            className={this.setNextQuestionButtonClass()}>
-            {this.setNextQuestionButtonMessage()}
-          </button>
+            </>
+            : <>
+              <div className='quiz-question'>{entities.decode(data.results[currentQuestion].question)}</div>
+              <div className="quiz-answers">
+                {this.getAnswers().map((answer) =>
+                  <Answer onClick={() => this.setSelectedAnswer(answer)}
+                    is_correct_answer={this.isCorrectAnswer(answer)}
+                    disabled={this.isSelectedAnswer()}
+                    key={answer}>{entities.decode(answer)}
+                  </Answer>
+                )}
+              </div>
+              <button onClick={this.showNextQuestion}
+                className={this.setNextQuestionButtonClass()}>
+                {this.setNextQuestionButtonMessage()}
+              </button>
+            </>
+          }
         </div>
         <div className="decoration-bottom">
           <div></div>
@@ -128,15 +126,6 @@ class App extends Component {
     })
   }
 
-  handleAnswerButton = (answer) => {
-
-    if (this.isCorrectAnswer(answer))
-      this.setState({ quizState: 'green', score: this.state.score + 1 })
-    else
-      this.setState({ quizState: 'red' })
-
-  }
-
   isSelectedAnswerCorrect() {
     if (!this.isSelectedAnswer()) return false
     return this.isCorrectAnswer(this.state.selectedAnswer)
@@ -173,6 +162,9 @@ class App extends Component {
     return this.state.currentQuestion === this.state.data.results.length
   }
 
-}
+  reloadPage() {
+    window.location.reload();
 
+  }
+}
 export default App;

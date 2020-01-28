@@ -6,17 +6,16 @@ export default class extends Component {
     }
 
     render() {
-        const { children, id } = this.props;
-        return <button onClick={() => this.handleClick()}
+        const { children } = this.props;
+        return <button onClick={this.handleClick}
             className={this.className()}
-            id={id}
             disabled={this.props.disabled}
         >{children}</button>
     }
 
     handleClick = () => {
         this.setState({ isClicked: true });
-        this.props.onClick(this.props.id)
+        this.props.onClick()
     }
 
     className() {
