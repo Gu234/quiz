@@ -59,7 +59,8 @@ class App extends Component {
                 {this.getAnswers().map((answer) =>
                   <Answer onClick={() => this.setSelectedAnswer(answer)}
                     is_correct_answer={this.isCorrectAnswer(answer)}
-                    disabled={this.isSelectedAnswer()}
+                    isSelectedAnswer={this.isSelectedAnswer()}
+
                     key={answer}>{entities.decode(answer)}
                   </Answer>
                 )}

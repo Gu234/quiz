@@ -84,7 +84,7 @@ body{
     }
     button{
         width: 150px;
-        height: 50px;
+        min-height: 50px;
         margin: 20px;
         border-radius: 25px;
         user-select: none;
@@ -96,15 +96,9 @@ body{
         &:hover{
             cursor: pointer;
         }
-
-        .red{
-            background-color: red;
+        &:disabled{
+            color: black;
         }
-
-        .green{
-            background-color: green;
-        }
-
     }
     .hidden{
         display: none;

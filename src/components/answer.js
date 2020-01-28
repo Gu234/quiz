@@ -9,7 +9,7 @@ export default class extends Component {
         const { children } = this.props;
         return <button onClick={this.handleClick}
             className={this.className()}
-            disabled={this.props.disabled}
+            disabled={this.isDisabled()}
         >{children}</button>
     }
 
@@ -24,6 +24,12 @@ export default class extends Component {
                 return 'green'
             else
                 return 'red'
+        else
+            if (this.props.is_correct_answer && this.props.isSelectedAnswer)
+                return 'green'
     }
 
+    isDisabled() {
+        return this.props.isSelectedAnswer
+    }
 }
