@@ -26,7 +26,7 @@ class App extends Component {
   }
 
   render() {
-    const { currentQuestion, data } = this.state;
+    const { data } = this.state;
     if (!data) return null;
 
     return (<>
@@ -46,31 +46,7 @@ class App extends Component {
           <div className='jumbotron-item2'>QUIZ TIME!</div>
         </div>
         <div className="quiz">
-          {this.isQuizFinished() ?
-            <>
-              <div className='quiz-score-description'>Your score:</div>
-              <div className='quiz-score'>{this.state.score}/10</div>
-              <button onClick={this.reloadPage}>Again?</button>
-
-            </>
-            : <>
-              <div className='quiz-question'>{entities.decode(data.results[currentQuestion].question)}</div>
-              <div className="quiz-answers">
-                {this.getAnswers().map((answer) =>
-                  <Answer onClick={() => this.setSelectedAnswer(answer)}
-                    is_correct_answer={this.isCorrectAnswer(answer)}
-                    isSelectedAnswer={this.isSelectedAnswer()}
-
-                    key={answer}>{entities.decode(answer)}
-                  </Answer>
-                )}
-              </div>
-              <button onClick={this.showNextQuestion}
-                className={this.setNextQuestionButtonClass()}>
-                {this.setNextQuestionButtonMessage()}
-              </button>
-            </>
-          }
+          {this.isQuizFinished() ? this.renderScore() : this.renderQuestionAndAnswers()}
         </div>
         <div className="decoration-bottom">
           <div></div>
@@ -85,6 +61,35 @@ class App extends Component {
       </div>
     </>
     )
+  }
+
+  renderScore() {
+    return <>
+      <div className='quiz-score-description'>Your score:</div>
+      <div className='quiz-score'>{this.state.score}/10</div>
+      <button onClick={this.reloadPage}>Again?</button>
+    </>
+  }
+
+  renderQuestionAndAnswers() {
+    const { currentQuestion, data } = this.state;
+
+    return <>
+      <div className='quiz-question'>{entities.decode(data.results[currentQuestion].question)}</div>
+      <div className="quiz-answers">
+        {this.getAnswers().map((answer) =>
+          <Answer onClick={() => this.setSelectedAnswer(answer)}
+            is_correct_answer={this.isCorrectAnswer(answer)}
+            isSelectedAnswer={this.isSelectedAnswer()}
+            key={answer}>{entities.decode(answer)}
+          </Answer>
+        )}
+      </div>
+      <button onClick={this.showNextQuestion}
+        className={this.setNextQuestionButtonClass()}>
+        {this.setNextQuestionButtonMessage()}
+      </button>
+    </>
   }
 
   setSelectedAnswer(selectedAnswer) {
