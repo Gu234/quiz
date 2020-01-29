@@ -26,8 +26,6 @@ class App extends Component {
   }
 
   render() {
-    const { data } = this.state;
-    if (!data) return null;
 
     return (<>
       <div className="container">
@@ -46,7 +44,7 @@ class App extends Component {
           <div className='jumbotron-item2'>QUIZ TIME!</div>
         </div>
         <div className="quiz">
-          {this.isQuizFinished() ? this.renderScore() : this.renderQuestionAndAnswers()}
+          {this.renderQuiz()}
         </div>
         <div className="decoration-bottom">
           <div></div>
@@ -61,6 +59,22 @@ class App extends Component {
       </div>
     </>
     )
+  }
+
+  renderQuiz() {
+    const { data } = this.state;
+
+    if (!data)
+      return this.renderLoadingIcon()
+    if (this.isQuizFinished())
+      return this.renderScore()
+    else
+      return this.renderQuestionAndAnswers()
+  }
+
+  renderLoadingIcon() {
+    return <img className='loadingGif' src={require('./assets/2.gif')} alt="animated" />
+
   }
 
   renderScore() {
